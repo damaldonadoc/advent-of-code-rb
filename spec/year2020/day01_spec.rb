@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 RSpec.describe Year2020::Day01 do
@@ -17,6 +19,15 @@ RSpec.describe Year2020::Day01 do
 
   it 'solves part2' do
     d = Year2020::Day01.new
-    expect(d.part2('')).to eq(nil)
+    input = <<~TXT
+      1721
+      979
+      366
+      299
+      675
+      1456
+    TXT
+
+    expect(d.part2(input)).to eq(241_861_950)
   end
 end
