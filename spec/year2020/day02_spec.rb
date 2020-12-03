@@ -16,6 +16,13 @@ RSpec.describe Year2020::Day02 do
 
   it 'solves part2' do
     d = Year2020::Day02.new
-    expect(d.part2('some_input')).to eq(nil)
+    input = <<~TXT
+      1-3 a: abcde
+      1-3 b: cdefg
+      2-9 c: ccccccccc
+    TXT
+
+    expect(d.part2('1-3 a: abcde')).to eq(1)
+    expect(d.part2(input)).to eq(1)
   end
 end

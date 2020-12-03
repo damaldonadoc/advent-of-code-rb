@@ -4,32 +4,38 @@ module Year2020
   class Day02
     def part1(input)
       input.lines.sum do |line|
-        valid_password?(format_line(line)) ? 1 : 0
+        valid_password_by_ocurrences?(format_line(line)) ? 1 : 0
       end
     end
 
-    def part2(_input)
-      nil
+    def part2(input)
+      input.lines.sum do |line|
+        valid_password_by_position?(format_line(line)) ? 1 : 0
+      end
     end
 
     private
 
     def format_line(line)
       ocurrences, char, password = line.split(' ')
-      min, max = ocurrences.split('-')
+      a, b = ocurrences.split('-')
 
       {
-        min: min.to_i,
-        max: max.to_i,
+        a: a.to_i,
+        b: b.to_i,
         char: char.delete(':'),
         password: password
       }
     end
 
-    def valid_password?(min:, max:, char:, password:)
+    def valid_password_by_ocurrences?(a:, b:, char:, password:)
       ocurrences = password.count(char)
 
-      min <= ocurrences && ocurrences <= max
+      a <= ocurrences && ocurrences <= b
+    end
+
+    def valid_password_by_position?(a:, b:, char:, password:)
+      (password[a - 1] == char) ^ (password[b - 1] == char)
     end
   end
 end
