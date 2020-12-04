@@ -23,7 +23,7 @@ module Year2020
 
     def part2(input)
       format_passports(input).sum do |passport|
-        valid_password?(passport) ? 1 : 0
+        valid_passport?(passport) ? 1 : 0
       end
     end
 
@@ -39,7 +39,7 @@ module Year2020
       (REQUIRED_KEYS - passport.keys).empty?
     end
 
-    def valid_password?(passport)
+    def valid_passport?(passport)
       return false unless required_keys?(passport)
 
       passport.all? do |k, v|
