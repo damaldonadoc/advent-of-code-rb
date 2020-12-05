@@ -11,8 +11,14 @@ module Year2020
       end.max
     end
 
-    def part2(_input)
-      nil
+    def part2(input)
+      occupied_seat_ids = input.lines.map do |line|
+        row(line) * COLUMN_RANGE.size + column(line)
+      end.sort
+
+      occupied_seat_ids.each_with_index.reduce(0) do |_, (id, index)|
+        break id + 1 if occupied_seat_ids[index + 1] != id + 1
+      end
     end
 
     def row(code)
