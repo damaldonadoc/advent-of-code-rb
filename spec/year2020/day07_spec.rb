@@ -22,6 +22,16 @@ RSpec.describe Year2020::Day07 do
 
   it 'solves part2' do
     d = Year2020::Day07.new
-    expect(d.part2('some_input')).to eq(nil)
+    input = <<~TXT
+      shiny gold bags contain 2 dark red bags.
+      dark red bags contain 2 dark orange bags.
+      dark orange bags contain 2 dark yellow bags.
+      dark yellow bags contain 2 dark green bags.
+      dark green bags contain 2 dark blue bags.
+      dark blue bags contain 2 dark violet bags.
+      dark violet bags contain no other bags.
+    TXT
+
+    expect(d.part2(input)).to eq(126)
   end
 end
