@@ -6,8 +6,12 @@ module Year2020
       find_invalid(input.split("\n").map(&:to_i), preamble_size)
     end
 
-    def part2(_input)
-      nil
+    def part2(input, preamble_size = 25)
+      numbers = input.split("\n").map(&:to_i)
+      invalid = find_invalid(numbers, preamble_size)
+      comb = find_invalid_combination(invalid, numbers).sort
+
+      comb.first + comb.last
     end
 
     private
@@ -29,6 +33,14 @@ module Year2020
 
         preamble.delete_at(0)
         preamble << n
+      end
+    end
+
+    def find_invalid_combination(number, array)
+      (2..(array.size - 1)).each do |i|
+        array.each_cons(i) do |chunk|
+          return chunk if chunk.sum == number
+        end
       end
     end
   end
