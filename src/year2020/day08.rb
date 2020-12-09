@@ -8,8 +8,20 @@ module Year2020
       acc
     end
 
-    def part2(_input)
-      nil
+    def part2(input)
+      jump_instructions =
+        input.lines.each_with_index.each_with_object([]) do |(line, index), acc|
+          acc << index if line.include?('jmp')
+        end
+
+      jump_instructions.each do |i|
+        lines = input.lines.dup
+        lines[i] = lines[i].gsub('jmp', 'nop')
+
+        index, acc, _p = process_instructions(lines, 0, 0, [])
+
+        return acc if index == lines.size
+      end
     end
 
     private
