@@ -11,30 +11,37 @@ module Year2020
       ).flatten.count(OCCUPIED)
     end
 
-    def part2(_input)
-      nil
+    def part2(input)
+      stable_seatmap(
+        input.split("\n").map { |line| line.split('') },
+        :occupied_directions,
+        5
+      ).flatten.count(OCCUPIED)
     end
 
     private
 
-    def stable_seatmap(seatmap)
-      new_seatmap = exec_round(seatmap)
+    def stable_seatmap(seatmap,
+                       occupied_method = :occupied_adjacent,
+                       vacate_rate = 4)
+
+      new_seatmap = exec_round(seatmap, occupied_method, vacate_rate)
 
       return new_seatmap if new_seatmap == seatmap
 
-      stable_seatmap(new_seatmap)
+      stable_seatmap(new_seatmap, occupied_method, vacate_rate)
     end
 
-    def exec_round(seatmap)
+    def exec_round(seatmap, occupied_method, vacate_rate)
       seatmap.each_with_index.map do |row, y|
         row.each_with_index.map do |seat, x|
           next seat if seat == '.'
 
-          occupied_adj = occupied_adjacent(seatmap, x, y)
+          occupied = send(occupied_method, seatmap, x, y)
 
-          if seat == FREE && occupied_adj.zero?
+          if seat == FREE && occupied.zero?
             OCCUPIED
-          elsif seat == OCCUPIED && occupied_adj >= 4
+          elsif seat == OCCUPIED && occupied >= vacate_rate
             FREE
           else
             seat
@@ -53,6 +60,33 @@ module Year2020
 
           seatmap[y][x] == OCCUPIED ? 1 : 0
         end
+      end
+    end
+
+    def occupied_directions(seatmap, col, row)
+      directions = [
+        [-1, -1], [-1, 0], [-1, 1],
+        [0, -1], [0, 1],
+        [1, -1], [1, 0], [1, 1]
+      ]
+
+      directions.sum do |dx, dy|
+        any_occupied_in_direction?(seatmap, col, row, dx, dy) ? 1 : 0
+      end
+    end
+
+    def any_occupied_in_direction?(seatmap, col, row, dx, dy)
+      loop do
+        col += dx
+        row += dy
+
+        if col == -1 || row == -1 ||
+           col == seatmap.first.size || row == seatmap.size
+          return false
+        end
+
+        return true if seatmap[row][col] == OCCUPIED
+        return false if seatmap[row][col] == FREE
       end
     end
   end
