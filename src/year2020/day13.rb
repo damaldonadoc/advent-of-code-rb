@@ -15,8 +15,23 @@ module Year2020
       (bus_depart - earliest_timestamp) * bus_id
     end
 
-    def part2(_input)
-      nil
+    def part2(input)
+      bus_ids = input.split.last.split(',').map(&:to_i)
+
+      bus_ids.each_with_index.reduce([1, 1]) do |(timestamp, lcm), (bus_id, index)|
+        next [timestamp, lcm] if bus_id.zero?
+
+        loop do
+          if ((timestamp + index) % bus_id).zero?
+            lcm *= bus_id
+            break
+          end
+
+          timestamp += lcm
+        end
+
+        [timestamp, lcm]
+      end.first
     end
   end
 end
