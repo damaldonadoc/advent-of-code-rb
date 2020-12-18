@@ -16,8 +16,18 @@ module Year2020
       ).last
     end
 
-    def part2(_input)
-      nil
+    def part2(input)
+      numbers = input.split(',').map(&:to_i)
+      initial_history = Hash[
+        numbers.map.with_index { |n, index| [n, [index + 1]] }
+      ]
+
+      play_game(
+        initial_history,
+        numbers.last,
+        numbers.size + 1,
+        30_000_000
+      ).last
     end
 
     private
