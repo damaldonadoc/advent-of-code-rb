@@ -23,8 +23,30 @@ RSpec.describe Year2020::Day16 do
     expect(d.part1(input)).to eq(71)
   end
 
-  it 'solves part2' do
+  it 'returns the fields with the right order' do
     d = Year2020::Day16.new
-    expect(d.part2('some_input')).to eq(nil)
+    input = <<~TXT
+      class: 0-1 or 4-19
+      row: 0-5 or 8-19
+      seat: 0-13 or 16-19
+
+      your ticket:
+      11,12,13
+
+      nearby tickets:
+      3,9,18
+      15,1,5
+      5,14,9
+    TXT
+
+    expect(d.sorted_fields(input)).to(
+      eq(
+        {
+          0 => ['row'],
+          1 => ['class'],
+          2 => ['seat']
+        }
+      )
+    )
   end
 end
