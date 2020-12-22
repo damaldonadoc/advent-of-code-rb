@@ -3,104 +3,68 @@
 module Year2020
   class Day17
     ACTIVE = '#'
-    INACTIVE = '.'
 
     def part1(input)
-      x, y, z = min_point = [-1, -1, 0]
-      layout = initialize_layout(input, min_point)
-      layout.default = INACTIVE
+      # get initial active points and add 3rd dimension
+      active = initially_active(input).map { |point| point.push(0) }.to_set
 
-      size = input.lines.size
-      x, y, z = -size, -size, -1
-
-      1.upto(6) do
-        layout = run_cycle(layout, [x, y, z])
-        x -= 1
-        y -= 1
-        z -= 1
+      6.times do
+        active = run_cycle(active)
       end
 
-      layout.count { |_k, v| v == ACTIVE }
+      active.count
     end
 
-    def part2(_input)
-      nil
+    def part2(input)
+      # get initial active points and add 3rd and 4th dimensions
+      active = initially_active(input).each { |point| point.push(0, 0) }.to_set
+
+      6.times do
+        active = run_cycle(active, 4)
+      end
+
+      active.count
     end
 
     private
 
-    def initialize_layout(input, initial_point)
-      x, y, z = initial_point
-
-      input.each_line(chomp: true).with_object({}) do |line, layout|
-        line.chars.each do |char|
-          layout[[x, y, z]] = char
-          x += 1
+    def initially_active(input)
+      input.each_line(chomp: true)
+           .with_object([]).with_index do |(line, active), y|
+        line.chars.each_with_index do |char, x|
+          active << [x, y] if char == ACTIVE
         end
-
-        x = initial_point[0]
-        y += 1
       end
     end
 
-    def run_cycle(layout, starting_point)
-      x, y, z = starting_point
-      new_layout = layout.dup
-
-      z.upto(-z) do |z_index|
-        y.upto(-y) do |y_index|
-          x.upto(-x) do |x_index|
-            active_cubes = active_neighbors(layout, [x_index, y_index, z_index])
-
-            new_layout[[x_index, y_index, z_index]] =
-              if layout[[x_index, y_index, z_index]] == ACTIVE &&
-                 [2, 3].include?(active_cubes)
-                ACTIVE
-              elsif layout[[x_index, y_index, z_index]] == INACTIVE &&
-                    active_cubes == 3
-                ACTIVE
-              else
-                INACTIVE
-              end
+    def run_cycle(prev_active, dimensions = 3)
+      surrounding =
+        prev_active.each_with_object(prev_active.dup) do |active_point, acc|
+          [-1, 0, 1].repeated_permutation(dimensions).each do |direction|
+            acc.add(active_point.zip(direction).map(&:sum))
           end
+        end
+
+      surrounding.each_with_object(Set.new) do |point, acc|
+        active_neighbors = count_active_neighbors(prev_active, point, dimensions)
+
+        if ([2, 3].include?(active_neighbors) && prev_active.include?(point)) ||
+           (active_neighbors == 3 && !prev_active.include?(point))
+          acc.add(point)
         end
       end
-
-      new_layout
     end
 
-    def active_neighbors(layout, point, max = 4)
-      x, y, z = point
-      active = 0
+    def count_active_neighbors(active_points, point, dimensions, max = 4)
+      [-1, 0, 1].repeated_permutation(dimensions).reduce(0) do |acc, offset|
+        neighbor = point.zip(offset).map(&:sum)
 
-      (z - 1).upto(z + 1) do |z_index|
-        (y - 1).upto(y + 1) do |y_index|
-          (x - 1).upto(x + 1) do |x_index|
-            next if point == [x_index, y_index, z_index]
+        next acc if point == neighbor
 
-            active += 1 if layout[[x_index, y_index, z_index]] == ACTIVE
+        acc += 1 if active_points.include?(neighbor)
+        return acc if acc == max
 
-            return active if active == max
-          end
-        end
-      end
-
-      active
-    end
-
-    def print_layout(layout)
-      keys = layout.keys.sort
-      min_x, min_y, min_z = keys.first
-      max_x, max_y, max_z = keys.last
-
-      min_z.upto(max_z) do |z|
-        puts "\nz=#{z}"
-        min_y.upto(max_y) do |y|
-          min_x.upto(max_x) do |x|
-            print layout[[x, y, z]]
-          end
-          puts "\n"
-        end
+        acc
       end
     end
   end
