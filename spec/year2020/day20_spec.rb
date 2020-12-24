@@ -3,9 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Year2020::Day20 do
-  it 'solves part1' do
-    d = Year2020::Day20.new
-    input = <<~TXT
+  let(:input) do
+    <<~TXT
       Tile 2311:
       ..##.#..#.
       ##..#.....
@@ -114,12 +113,15 @@ RSpec.describe Year2020::Day20 do
       ..#.......
       ..#.###...
     TXT
+  end
 
+  it 'solves part1' do
+    d = Year2020::Day20.new
     expect(d.part1(input)).to eq(20_899_048_083_289)
   end
 
   it 'solves part2' do
     d = Year2020::Day20.new
-    expect(d.part2('some_input')).to eq(nil)
+    expect(d.part2(input)).to eq(2)
   end
 end
