@@ -22,8 +22,17 @@ module Year2022
       end.sum
     end
 
-    def part2(_input)
-      nil
+    def part2(input)
+      input.lines.map(&:split).map do |oponent_play, desired_outcome|
+        case desired_outcome
+        when 'X'
+          MY_PLAYS.values[OPONENT_PLAYS[oponent_play] - 2] + ROUND_SCORES[:loss]
+        when 'Y'
+          MY_PLAYS.values[OPONENT_PLAYS[oponent_play] - 1] + ROUND_SCORES[:draw]
+        when 'Z'
+          MY_PLAYS.values[OPONENT_PLAYS[oponent_play] - 3] + ROUND_SCORES[:win]
+        end
+      end.sum
     end
   end
 end
