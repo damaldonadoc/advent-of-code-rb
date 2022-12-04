@@ -3,19 +3,19 @@
 module Year2022
   class Day04
     def part1(input)
-      input.lines.keep_if do |pair|
+      input.lines.count do |pair|
         assignation1, assignation2 = assignations_from_pair(pair)
 
         assignation1.cover?(assignation2) || assignation2.cover?(assignation1)
-      end.count
+      end
     end
 
     def part2(input)
-      input.lines.keep_if do |pair|
+      input.lines.count do |pair|
         assignation1, assignation2 = assignations_from_pair(pair)
 
         (assignation1.to_a & assignation2.to_a).any?
-      end.count
+      end
     end
 
     private
