@@ -13,8 +13,15 @@ module Year2022
       crate_stacks.map { |_, stack| stack.last }.join
     end
 
-    def part2(_input)
-      nil
+    def part2(input)
+      stacks_chunk, instructions_chunk = *input.split("\n\n")
+
+      crate_stacks = format_stacks(stacks_chunk)
+      instructions = format_instructions(instructions_chunk)
+
+      arrange_stack_map(crate_stacks, instructions, multiple_moves: true)
+
+      crate_stacks.map { |_, stack| stack.last }.join
     end
 
     private
@@ -40,11 +47,13 @@ module Year2022
       end
     end
 
-    def arrange_stack_map(stack_map, instructions)
+    def arrange_stack_map(stack_map, instructions, multiple_moves: false)
       instructions.each do |instruction|
         moving_crates = stack_map[instruction[:source_stack]].pop(instruction[:crates_to_move])
 
-        stack_map[instruction[:target_stack]].push(*moving_crates.reverse)
+        moving_crates = moving_crates.reverse unless multiple_moves
+
+        stack_map[instruction[:target_stack]].push(*moving_crates)
       end
     end
   end
