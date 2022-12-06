@@ -15,6 +15,11 @@ RSpec.describe Year2022::Day06 do
 
   it 'solves part2' do
     d = Year2022::Day06.new
-    expect(d.part2('some_input')).to eq(nil)
+
+    expect(d.part2('mjqjpqmgbljsphdztnvjfqwrcgsmlb')).to eq(19)
+    expect(d.part2('bvwbjplbgvbhsrlpgdmjqwftvncz')).to eq(23)
+    expect(d.part2('nppdvjthqldpwncqszvftbrmjlhg')).to eq(23)
+    expect(d.part2('nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg')).to eq(29)
+    expect(d.part2('zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw')).to eq(26)
   end
 end
