@@ -2,20 +2,30 @@
 
 module Year2022
   class Day07
-    DELETABLE_SIZE = 100_000
+    DISK_SPACE = 70_000_000
+    MIN_REQUIRED_SPACE = 30_000_000
 
     def part1(input)
       directory_tree = build_directory_tree(input)
 
       calc_directory_size!(directory_tree, '/')
 
-      directories = deletable_directories(directory_tree, '/', DELETABLE_SIZE)
+      directories = deletable_directories(directory_tree, '/', 100_000)
 
       directories.map(&:values).flatten.sum
     end
 
-    def part2(_input)
-      nil
+    def part2(input)
+      directory_tree = build_directory_tree(input)
+
+      calc_directory_size!(directory_tree, '/')
+
+      free_space = DISK_SPACE - directory_tree['/'][:size]
+      required_space = MIN_REQUIRED_SPACE - free_space
+
+      directories = deletable_directories(directory_tree, '/', MIN_REQUIRED_SPACE)
+
+      directories.map { |dir| dir.values.select { |size| size > required_space } }.flatten.min
     end
 
     private
