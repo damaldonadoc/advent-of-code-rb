@@ -26,13 +26,33 @@ module Year2022
       monkeys.max_by(2, &:inspect_count).map(&:inspect_count).reduce(&:*)
     end
 
-    def part2(_input)
-      nil
+    def part2(input)
+      monkeys = input.split("\n\n").map do |monkey_def|
+        Monkey.new(monkey_def)
+      end
+
+      lcm = monkeys.map {|m| m.test.split.last.to_i }.reduce(&:lcm)
+
+      (1..10_000).each do |_turn|
+        monkeys.each do |monkey|
+          monkey.throws_from_turn(relief_factor: 3, lcm: lcm).each do |throw_action|
+            target_monkey = monkeys.find { |tm| tm.id == throw_action[:target_monkey] }
+
+            target_monkey.starting_items.append(throw_action[:item])
+
+            monkey.starting_items.delete(throw_action[:item])
+          end
+
+          monkey.throw_list = []
+        end
+      end
+
+      monkeys.max_by(2, &:inspect_count).map(&:inspect_count).reduce(&:*)
     end
 
     class Monkey
       ATTRIBUTES = %i[id starting_items operation test if_true if_false].freeze
-      attr_reader :id, :inspect_count
+      attr_reader :id, :inspect_count, :test
       attr_accessor :starting_items, :throw_list
 
       def initialize(yaml_like_string)
@@ -43,9 +63,13 @@ module Year2022
         @inspect_count = 0
       end
 
-      def throws_from_turn
+      def throws_from_turn(relief_factor: 3, lcm: nil)
         # inspect item and process relief
-        @starting_items.map! { |item| inspect_item(item) / 3 }
+        if lcm
+          @starting_items.map! { |item| inspect_item(item) % lcm }
+        else
+          @starting_items.map! { |item| inspect_item(item) / relief_factor }
+        end
 
         @starting_items.each { |item| queue_item_to_throw(item) }
 
