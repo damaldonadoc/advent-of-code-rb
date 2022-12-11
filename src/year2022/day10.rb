@@ -9,6 +9,8 @@ module Year2022
     }.freeze
     INITIAL_REGISTER = 1
 
+    CRT_WIDTH = 40
+
     def part1(input)
       program = load_program(input)
 
@@ -17,8 +19,10 @@ module Year2022
       end
     end
 
-    def part2(_input)
-      nil
+    def part2(input)
+      program = load_program(input)
+
+      draw_program(program)
     end
 
     private
@@ -32,6 +36,10 @@ module Year2022
     end
 
     def signal_strength_at_cycle(program, cycle)
+      cycle * register_at_cycle(program, cycle)
+    end
+
+    def register_at_cycle(program, cycle)
       elapsed_cycles = 0
 
       executed_instructions = program.take_while do |instruction|
@@ -40,9 +48,35 @@ module Year2022
         elapsed_cycles < cycle
       end
 
-      register = INITIAL_REGISTER + executed_instructions.sum { |i| i[:value].to_i }
+      INITIAL_REGISTER + executed_instructions.sum { |i| i[:value].to_i }
+    end
 
-      cycle * register
+    def cycles_to_process(program)
+      program.sum { |instruction| COMMAND_CYCLES[instruction[:command]] }
+    end
+
+    def draw_program(program)
+      crt_state = []
+
+      sprite_position = 0
+      cycles = 1..cycles_to_process(program)
+
+      cycles.each do |cycle|
+        sprite_position = (cycle - 1) % CRT_WIDTH
+
+        crt_state.append(String.new) if sprite_position.zero?
+
+        register = register_at_cycle(program, cycle)
+        current_line = crt_state.last
+
+        if ((register - 1)..(register + 1)).to_a.include?(sprite_position)
+          current_line.concat('#')
+        else
+          current_line.concat('.')
+        end
+      end
+
+      crt_state.join("\n")
     end
   end
 end

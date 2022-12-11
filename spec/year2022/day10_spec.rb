@@ -317,6 +317,6 @@ RSpec.describe Year2022::Day10 do
       #######.......#######.......#######.....
     TXT
 
-    expect(d.part2(input)).to eq(output)
+    expect(d.part2(input)).to eq(output.chomp)
   end
 end
