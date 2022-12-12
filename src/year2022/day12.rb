@@ -23,7 +23,7 @@ module Year2022
       open_set = [start]
       closed_set = []
 
-      build_graph(height_matrix, start, goal)
+      build_graph(height_matrix, [start], goal)
 
       search_path(open_set, closed_set, goal).count
     end
@@ -32,35 +32,38 @@ module Year2022
       height_matrix = Matrix[*input.lines.map { |line| line.strip.chars }]
 
       goal_index = height_matrix.find_index(GOAL_MARK)
+
       height_matrix[*goal_index] = 'z'
 
-      height_matrix.each_with_index.map do |val, row, column|
-        # assumed it was any `a` on the edge
-        next unless val == 'a' && column.zero?
+      goal = { row: goal_index[0], column: goal_index[1], neighbors: [] }
 
-        start = { row: row, column: column, steps_from_start: 0, steps_to_goal: Float::INFINITY, neighbors: [] }
-        goal = { row: goal_index[0], column: goal_index[1], neighbors: [] }
+      starting_nodes = height_matrix.each_with_index.map do |val, row, column|
+        next unless val == 'a'
 
-        open_set = [start]
-        closed_set = []
+        node = { row: row, column: column, steps_from_start: 0, neighbors: [] }
+        node[:steps_to_goal] = distance(node, goal)
 
-        build_graph(height_matrix, start, goal)
+        node
+      end.compact
 
-        search_path(open_set, closed_set, goal).count
-      end.compact.min
+      open_set = starting_nodes
+      closed_set = []
+
+      build_graph(height_matrix, starting_nodes, goal)
+
+      search_path(open_set, closed_set, goal).count
     end
 
     private
 
-    def build_graph(matrix, start, goal)
+    def build_graph(matrix, starting_nodes, goal)
       nodes_map = {
-        [start[:row], start[:column]] => start,
         [goal[:row], goal[:column]] => goal
       }
-      matrix.each_with_index.each_with_object(nodes_map) do |(_val, row, column), acc|
-        next if (start[:row] == row && start[:column] == column) || (goal[:row] == row && goal[:column] == column)
+      starting_nodes.each { |start| nodes_map[[start[:row], start[:column]]] = start }
 
-        acc[[row, column]] = { row:, column:, neighbors: [] }
+      matrix.each_with_index.each_with_object(nodes_map) do |(_val, row, column), acc|
+        acc[[row, column]] ||= { row:, column:, neighbors: [] }
       end
 
       nodes_map.each do |node_coords, node|
