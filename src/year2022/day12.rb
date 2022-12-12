@@ -28,8 +28,26 @@ module Year2022
       search_path(open_set, closed_set, goal).count
     end
 
-    def part2(_input)
-      nil
+    def part2(input)
+      height_matrix = Matrix[*input.lines.map { |line| line.strip.chars }]
+
+      goal_index = height_matrix.find_index(GOAL_MARK)
+      height_matrix[*goal_index] = 'z'
+
+      height_matrix.each_with_index.map do |val, row, column|
+        # assumed it was any `a` on the edge
+        next unless val == 'a' && column.zero?
+
+        start = { row: row, column: column, steps_from_start: 0, steps_to_goal: Float::INFINITY, neighbors: [] }
+        goal = { row: goal_index[0], column: goal_index[1], neighbors: [] }
+
+        open_set = [start]
+        closed_set = []
+
+        build_graph(height_matrix, start, goal)
+
+        search_path(open_set, closed_set, goal).count
+      end.compact.min
     end
 
     private
