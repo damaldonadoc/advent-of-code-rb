@@ -13,7 +13,14 @@ module Year2024
     end
 
     def part2(input)
-      nil
+      left_array, right_array = input.lines.map do |line|
+        line.split.map(&:to_i)
+      end.transpose
+
+      right_counts = right_array.tally
+      left_array.reduce(0) do |sum, left_item|
+        sum + (left_item * right_counts[left_item].to_i)
+      end
     end
   end
 end
