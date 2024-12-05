@@ -9,7 +9,16 @@ module Year2024
     end
 
     def part2(input)
-      nil
+      enabled = true
+
+      input.scan(/do\(\)|don't\(\)|mul\(\d+,\d+\)/).sum do |instruction|
+        if instruction.start_with?('mul')
+          enabled ? instruction.scan(/\d+/).map(&:to_i).reduce(:*) : 0
+        else
+          enabled = (instruction == 'do()')
+          0
+        end
+      end
     end
   end
 end
